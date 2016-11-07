@@ -53,36 +53,37 @@ class CLogger extends CComponent
 	 * @since 1.1.8
 	 */
 	public $autoDump=false;
+	/* CORE HACK BEGIN */
 	/**
 	 * @var array log messages
 	 */
-	private $_logs=array();
+	protected $_logs=array();
 	/**
 	 * @var integer number of log messages
 	 */
-	private $_logCount=0;
+	protected $_logCount=0;
 	/**
 	 * @var array log levels for filtering (used when filtering)
 	 */
-	private $_levels;
+	protected $_levels;
 	/**
 	 * @var array log categories for filtering (used when filtering)
 	 */
-	private $_categories;
+	protected $_categories;
 	/**
 	 * @var array log categories for excluding from filtering (used when filtering)
 	 */
-	private $_except=array();
+	protected $_except=array();
 	/**
 	 * @var array the profiling results (category, token => time in seconds)
 	 */
-	private $_timings;
+	protected $_timings;
 	/**
 	* @var boolean if we are processing the log or still accepting new log messages
 	* @since 1.1.9
 	*/
-	private $_processing=false;
-
+	protected $_processing=false;
+	/* CORE HACK END */
 	/**
 	 * Logs a message.
 	 * Messages logged by this method may be retrieved back via {@link getLogs}.
@@ -155,15 +156,17 @@ class CLogger extends CComponent
 		return $ret;
 	}
 
+	/* CORE HACK */
 	/**
 	 * Filter function used by {@link getLogs}
 	 * @param array $value element to be filtered
 	 * @return boolean true if valid log, false if not.
 	 */
-	private function filterByCategory($value)
+	protected function filterByCategory($value)
 	{
 		return $this->filterAllCategories($value, 2);
 	}
+	/* END CORE HACK */
 
 	/**
 	 * Filter function used by {@link getProfilingResults}
@@ -175,13 +178,14 @@ class CLogger extends CComponent
 		return $this->filterAllCategories($value, 1);
 	}
 
+	/* CORE HACK */
 	/**
 	 * Filter function used to filter included and excluded categories
 	 * @param array $value element to be filtered
 	 * @param integer $index index of the values array to be used for check
 	 * @return boolean true if valid timing entry, false if not.
 	 */
-	private function filterAllCategories($value, $index)
+	protected function filterAllCategories($value, $index)
 	{
 		$cat=strtolower($value[$index]);
 		$ret=empty($this->_categories);
@@ -200,16 +204,19 @@ class CLogger extends CComponent
 		}
 		return $ret;
 	}
+	/* END CORE HACK */
 
+	/* CORE HACK */
 	/**
 	 * Filter function used by {@link getLogs}
 	 * @param array $value element to be filtered
 	 * @return boolean true if valid log, false if not.
 	 */
-	private function filterByLevel($value)
+	protected function filterByLevel($value)
 	{
 		return in_array(strtolower($value[1]),$this->_levels);
 	}
+	/* END CORE HACK */
 
 	/**
 	 * Returns the total time for serving the current request.

@@ -36,10 +36,6 @@ defined('YII_ENABLE_ERROR_HANDLER') or define('YII_ENABLE_ERROR_HANDLER',true);
  * Defines the Yii framework installation path.
  */
 defined('YII_PATH') or define('YII_PATH',dirname(__FILE__));
-/**
- * Defines the Zii library installation path.
- */
-defined('YII_ZII_PATH') or define('YII_ZII_PATH',YII_PATH.DIRECTORY_SEPARATOR.'zii');
 
 /**
  * YiiBase is a helper class serving common framework functionalities.
@@ -67,7 +63,7 @@ class YiiBase
 	 */
 	public static $enableIncludePath=true;
 
-	private static $_aliases=array('system'=>YII_PATH,'zii'=>YII_ZII_PATH); // alias => path
+	private static $_aliases=array('system'=>YII_PATH); // alias => path
 	private static $_imports=array();					// alias => class name or directory
 	private static $_includePaths;						// list of include paths
 	private static $_app;
@@ -268,7 +264,12 @@ class YiiBase
 		if(class_exists($alias,false) || interface_exists($alias,false))
 			return self::$_imports[$alias]=$alias;
 
-		if(($pos=strrpos($alias,'\\'))!==false) // a class name in PHP 5.3 namespace format
+		/*
+		 * Hack here to allow namespace support that isn't tied directly to path aliases.
+		 * Commented out the block below.
+		 */
+
+		/*if(($pos=strrpos($alias,'\\'))!==false) // a class name in PHP 5.3 namespace format
 		{
 			$namespace=str_replace('\\','.',ltrim(substr($alias,0,$pos),'\\'));
 			if(($path=self::getPathOfAlias($namespace))!==false)
@@ -295,7 +296,7 @@ class YiiBase
 					throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing directory or file.',
 						array('{alias}'=>$namespace)));
 			}
-		}
+		}*/
 
 		if(($pos=strrpos($alias,'.'))===false)  // a simple class name
 		{
@@ -484,7 +485,7 @@ class YiiBase
 				}
 			}
 		}
-		self::$_logger->log($msg,$level,$category);
+		self::$_logger->log($msg, $level, false, $category);
 	}
 
 	/**
@@ -834,42 +835,20 @@ class YiiBase
 		'CFilterChain' => '/web/filters/CFilterChain.php',
 		'CHttpCacheFilter' => '/web/filters/CHttpCacheFilter.php',
 		'CInlineFilter' => '/web/filters/CInlineFilter.php',
-		'CForm' => '/web/form/CForm.php',
-		'CFormButtonElement' => '/web/form/CFormButtonElement.php',
-		'CFormElement' => '/web/form/CFormElement.php',
-		'CFormElementCollection' => '/web/form/CFormElementCollection.php',
-		'CFormInputElement' => '/web/form/CFormInputElement.php',
-		'CFormStringElement' => '/web/form/CFormStringElement.php',
-		'CGoogleApi' => '/web/helpers/CGoogleApi.php',
 		'CHtml' => '/web/helpers/CHtml.php',
 		'CJSON' => '/web/helpers/CJSON.php',
 		'CJavaScript' => '/web/helpers/CJavaScript.php',
 		'CJavaScriptExpression' => '/web/helpers/CJavaScriptExpression.php',
-		'CPradoViewRenderer' => '/web/renderers/CPradoViewRenderer.php',
-		'CViewRenderer' => '/web/renderers/CViewRenderer.php',
-		'CWebService' => '/web/services/CWebService.php',
-		'CWebServiceAction' => '/web/services/CWebServiceAction.php',
-		'CWsdlGenerator' => '/web/services/CWsdlGenerator.php',
-		'CActiveForm' => '/web/widgets/CActiveForm.php',
-		'CAutoComplete' => '/web/widgets/CAutoComplete.php',
 		'CClipWidget' => '/web/widgets/CClipWidget.php',
 		'CContentDecorator' => '/web/widgets/CContentDecorator.php',
 		'CFilterWidget' => '/web/widgets/CFilterWidget.php',
-		'CFlexWidget' => '/web/widgets/CFlexWidget.php',
 		'CHtmlPurifier' => '/web/widgets/CHtmlPurifier.php',
 		'CInputWidget' => '/web/widgets/CInputWidget.php',
 		'CMarkdown' => '/web/widgets/CMarkdown.php',
-		'CMaskedTextField' => '/web/widgets/CMaskedTextField.php',
-		'CMultiFileUpload' => '/web/widgets/CMultiFileUpload.php',
 		'COutputCache' => '/web/widgets/COutputCache.php',
 		'COutputProcessor' => '/web/widgets/COutputProcessor.php',
-		'CStarRating' => '/web/widgets/CStarRating.php',
-		'CTabView' => '/web/widgets/CTabView.php',
 		'CTextHighlighter' => '/web/widgets/CTextHighlighter.php',
-		'CTreeView' => '/web/widgets/CTreeView.php',
 		'CWidget' => '/web/widgets/CWidget.php',
-		'CCaptcha' => '/web/widgets/captcha/CCaptcha.php',
-		'CCaptchaAction' => '/web/widgets/captcha/CCaptchaAction.php',
 		'CBasePager' => '/web/widgets/pagers/CBasePager.php',
 		'CLinkPager' => '/web/widgets/pagers/CLinkPager.php',
 		'CListPager' => '/web/widgets/pagers/CListPager.php',

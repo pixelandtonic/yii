@@ -169,6 +169,7 @@ pre span.error-ln {
 		<?php echo $this->renderSourceCode($data['file'],$data['line'],$this->maxSourceLines); ?>
 	</div>
 
+	<?php if (!empty($data['traces'])): ?>
 	<div class="traces">
 		<h2>Stack Trace</h2>
 		<?php $count=0; ?>
@@ -199,10 +200,12 @@ pre span.error-ln {
 						echo ': ';
 						if(!empty($trace['class']))
 							echo "<strong>{$trace['class']}</strong>{$trace['type']}";
-						echo "<strong>{$trace['function']}</strong>(";
-						if(!empty($trace['args']))
-							echo htmlspecialchars($this->argumentsToString($trace['args']),ENT_QUOTES,Yii::app()->charset);
-						echo ')';
+						if(!empty($trace['function'])):
+							echo "<strong>{$trace['function']}</strong>(";
+							if(!empty($trace['args']))
+								echo htmlspecialchars($this->argumentsToString($trace['args']),ENT_QUOTES,Yii::app()->charset);
+							echo ')';
+						endif
 					?>
 				</div>
 
@@ -212,6 +215,7 @@ pre span.error-ln {
 		<?php endforeach; ?>
 		</table>
 	</div>
+	<?php endif ?>
 
 	<div class="version">
 		<?php echo date('Y-m-d H:i:s',$data['time']) .' '. $data['version']; ?>

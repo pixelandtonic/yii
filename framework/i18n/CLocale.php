@@ -43,10 +43,12 @@ class CLocale extends CComponent
 	 */
 	public static $dataPath;
 
-	private $_id;
-	private $_data;
-	private $_dateFormatter;
-	private $_numberFormatter;
+	/* CORE HACK */
+	protected $_id;
+	protected $_data;
+	protected $_dateFormatter;
+	protected $_numberFormatter;
+	/* END CORE HACK */
 
 	/**
 	 * Returns the instance of the specified locale.

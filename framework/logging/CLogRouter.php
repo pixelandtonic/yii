@@ -51,7 +51,8 @@
  */
 class CLogRouter extends CApplicationComponent
 {
-	private $_routes=array();
+	/* CORE HACK */
+	protected $_routes=array();
 
 	/**
 	 * Initializes this application component.

@@ -63,7 +63,9 @@ class CDateFormatter extends CComponent
 		'v'=>'formatTimeZone',
 	);
 
-	private $_locale;
+	/* CORE HACK */
+	protected $_locale;
+	/* END CORE HACK */
 
 	/**
 	 * Constructor.
