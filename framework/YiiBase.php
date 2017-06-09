@@ -76,7 +76,7 @@ class YiiBase
 	 */
 	public static function getVersion()
 	{
-		return '1.1.18';
+		return '1.1.19';
 	}
 
 	/**
@@ -264,12 +264,7 @@ class YiiBase
 		if(class_exists($alias,false) || interface_exists($alias,false))
 			return self::$_imports[$alias]=$alias;
 
-		/*
-		 * Hack here to allow namespace support that isn't tied directly to path aliases.
-		 * Commented out the block below.
-		 */
-
-		/*if(($pos=strrpos($alias,'\\'))!==false) // a class name in PHP 5.3 namespace format
+		if(($pos=strrpos($alias,'\\'))!==false) // a class name in PHP 5.3 namespace format
 		{
 			$namespace=str_replace('\\','.',ltrim(substr($alias,0,$pos),'\\'));
 			if(($path=self::getPathOfAlias($namespace))!==false)
@@ -296,7 +291,7 @@ class YiiBase
 					throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing directory or file.',
 						array('{alias}'=>$namespace)));
 			}
-		}*/
+		}
 
 		if(($pos=strrpos($alias,'.'))===false)  // a simple class name
 		{
@@ -485,7 +480,7 @@ class YiiBase
 				}
 			}
 		}
-		self::$_logger->log($msg, $level, false, $category);
+		self::$_logger->log($msg,$level,$category);
 	}
 
 	/**
