@@ -799,7 +799,7 @@ class CHttpRequest extends CApplicationComponent
 
 	private $_port;
 
- 	/**
+	/**
 	 * Returns the port to use for insecure requests.
 	 * Defaults to 80, or the port specified by the server if the current
 	 * request is insecure.
@@ -1436,8 +1436,13 @@ class CCookieCollection extends CMap
 			$sm=Yii::app()->getSecurityManager();
 			foreach($_COOKIE as $name=>$value)
 			{
-				if(is_string($value) && ($value=$sm->validateData($value))!==false)
-					$cookies[$name]=new CHttpCookie($name,@unserialize($value,array('allowed_classes' => false)));
+				if(is_string($value) && ($value=$sm->validateData($value))!==false) {
+					if (defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 70000) {
+						$cookies[$name] = new CHttpCookie($name, @unserialize($value, ['allowed_classes' => false]));
+					} else {
+						$cookies[$name] = new CHttpCookie($name, @unserialize($value));
+					}
+				}
 			}
 		}
 		else

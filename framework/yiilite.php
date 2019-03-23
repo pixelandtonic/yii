@@ -684,8 +684,8 @@ class CComponent
 		}
 		elseif(is_array($this->_m))
 		{
- 			if(isset($this->_m[$name]))
- 				return true;
+			if(isset($this->_m[$name]))
+				return true;
 			foreach($this->_m as $object)
 			{
 				if($object->getEnabled() && (property_exists($object,$name) || $object->canGetProperty($name)))
@@ -3045,8 +3045,14 @@ class CCookieCollection extends CMap
 			$sm=Yii::app()->getSecurityManager();
 			foreach($_COOKIE as $name=>$value)
 			{
-				if(is_string($value) && ($value=$sm->validateData($value))!==false)
-					$cookies[$name]=new CHttpCookie($name,@unserialize($value,array('allowed_classes' => false)));
+				if(is_string($value) && ($value=$sm->validateData($value))!==false) {
+					if (defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 70000) {
+						$cookies[$name]=new CHttpCookie($name,@unserialize($value,array('allowed_classes' => false)));
+					} else {
+						$cookies[$name]=new CHttpCookie($name,@unserialize($value));
+					}
+				}
+
 			}
 		}
 		else
@@ -4122,7 +4128,10 @@ class CController extends CBaseController
 				if(extension_loaded('zlib'))
 					$data=@gzuncompress($data);
 				if(($data=Yii::app()->getSecurityManager()->validateData($data))!==false)
-					return @unserialize($data,array('allowed_classes' => false));
+					if(defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 70000)
+						return @unserialize($data,array('allowed_classes' => false));
+					else
+						return @unserialize($data);
 			}
 		}
 		return array();
@@ -6643,20 +6652,20 @@ class CClientScript extends CApplicationComponent
 		return $this->coreScripts[$name]['baseUrl']=$baseUrl;
 	}
 	public function hasPackage($name)
-    {
-        if(isset($this->coreScripts[$name]))
-            return true;
-        if(isset($this->packages[$name]))
-            return true;
-        else
-        {
-            if($this->corePackages===null)
-                $this->corePackages=require(YII_PATH.'/web/js/packages.php');
-            if(isset($this->corePackages[$name]))
-                return true;
-        }
-        return false;
-    }
+	{
+		if(isset($this->coreScripts[$name]))
+			return true;
+		if(isset($this->packages[$name]))
+			return true;
+		else
+		{
+			if($this->corePackages===null)
+				$this->corePackages=require(YII_PATH.'/web/js/packages.php');
+			if(isset($this->corePackages[$name]))
+				return true;
+		}
+		return false;
+	}
 	public function registerPackage($name)
 	{
 		return $this->registerCoreScript($name);
