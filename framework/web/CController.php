@@ -1213,7 +1213,7 @@ class CController extends CBaseController
 					$data=@gzuncompress($data);
 				if(($data=Yii::app()->getSecurityManager()->validateData($data))!==false) {
 					if (defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 70000) {
-						return @unserialize($data, ['allowed_classes' => false]);
+						return @unserialize($data, array('allowed_classes' => false));
 					} else {
 						return @unserialize($data);
 					}
