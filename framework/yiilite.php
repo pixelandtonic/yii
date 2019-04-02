@@ -41,7 +41,7 @@ class YiiBase
 	private static $_logger;
 	public static function getVersion()
 	{
-		return '1.1.20';
+		return '1.1.21';
 	}
 	public static function createWebApplication($config=null)
 	{
@@ -684,8 +684,8 @@ class CComponent
 		}
 		elseif(is_array($this->_m))
 		{
-			if(isset($this->_m[$name]))
-				return true;
+ 			if(isset($this->_m[$name]))
+ 				return true;
 			foreach($this->_m as $object)
 			{
 				if($object->getEnabled() && (property_exists($object,$name) || $object->canGetProperty($name)))
@@ -2553,9 +2553,7 @@ class CHttpRequest extends CApplicationComponent
 	{
 		if($this->_requestUri===null)
 		{
-			if(isset($_SERVER['HTTP_X_REWRITE_URL'])) // IIS
-				$this->_requestUri=$_SERVER['HTTP_X_REWRITE_URL'];
-			elseif(isset($_SERVER['REQUEST_URI']))
+			if(isset($_SERVER['REQUEST_URI']))
 			{
 				$this->_requestUri=$_SERVER['REQUEST_URI'];
 				if(!empty($_SERVER['HTTP_HOST']))
@@ -2807,6 +2805,13 @@ class CHttpRequest extends CApplicationComponent
 		$preferredAcceptTypes=$this->getPreferredAcceptTypes();
 		return empty($preferredAcceptTypes) ? false : $preferredAcceptTypes[0];
 	}
+	private function stringCompare($a, $b)
+	{
+		if ($a[0] == $b[0]) {
+			return 0;
+		}
+		return ($a[0] < $b[0]) ? 1 : -1;
+	}
 	public function getPreferredLanguages()
 	{
 		if($this->_preferredLanguages===null)
@@ -2823,7 +2828,7 @@ class CHttpRequest extends CApplicationComponent
 					if($q)
 						$languages[]=array((float)$q,$matches[1][$i]);
 				}
-				usort($languages,create_function('$a,$b','if($a[0]==$b[0]) {return 0;} return ($a[0]<$b[0]) ? 1 : -1;'));
+				usort($languages, array($this, 'stringCompare'));
 				foreach($languages as $language)
 					$sortedLanguages[]=$language[1];
 			}
@@ -4691,10 +4696,12 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 		$data=session_get_cookie_params();
 		extract($data);
 		extract($value);
+		$this->freeze();
 		if(isset($httponly))
 			session_set_cookie_params($lifetime,$path,$domain,$secure,$httponly);
 		else
 			session_set_cookie_params($lifetime,$path,$domain,$secure);
+		$this->unfreeze();
 	}
 	public function getCookieMode()
 	{
@@ -4755,7 +4762,9 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 	}
 	public function setUseTransparentSessionID($value)
 	{
+		$this->freeze();
 		ini_set('session.use_trans_sid',$value?'1':'0');
+		$this->unfreeze();
 	}
 	public function getTimeout()
 	{
@@ -4763,7 +4772,9 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 	}
 	public function setTimeout($value)
 	{
+		$this->freeze();
 		ini_set('session.gc_maxlifetime',$value);
+		$this->unfreeze();
 	}
 	public function openSession($savePath,$sessionName)
 	{
@@ -6652,20 +6663,20 @@ class CClientScript extends CApplicationComponent
 		return $this->coreScripts[$name]['baseUrl']=$baseUrl;
 	}
 	public function hasPackage($name)
-	{
-		if(isset($this->coreScripts[$name]))
-			return true;
-		if(isset($this->packages[$name]))
-			return true;
-		else
-		{
-			if($this->corePackages===null)
-				$this->corePackages=require(YII_PATH.'/web/js/packages.php');
-			if(isset($this->corePackages[$name]))
-				return true;
-		}
-		return false;
-	}
+    {
+        if(isset($this->coreScripts[$name]))
+            return true;
+        if(isset($this->packages[$name]))
+            return true;
+        else
+        {
+            if($this->corePackages===null)
+                $this->corePackages=require(YII_PATH.'/web/js/packages.php');
+            if(isset($this->corePackages[$name]))
+                return true;
+        }
+        return false;
+    }
 	public function registerPackage($name)
 	{
 		return $this->registerCoreScript($name);
